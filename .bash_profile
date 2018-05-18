@@ -47,9 +47,13 @@ parse_git_branch() {
 }
 
 git_status() {
-  if [ -d .git ]; then
-    if `git diff --quiet 2> /dev/null`; then
+  local status="`git status -unormal 2>&1`"
+
+  if ! [[ "$status" =~ Not\ a\ git\ repo ]]; then
+    if [[ "$status" =~ nothing\ to\ commit ]]; then
       echo -e $CYAN
+    elif [[ "$status" =~ nothing\ added\ to\ commit\ but\ untracked\ files\ present ]]; then
+      echo -e $BROWN
     else
       echo -e $RED
     fi
